@@ -17,7 +17,6 @@ import com.cherry.lib.doc.R
 import com.cherry.lib.doc.interfaces.OnPdfItemClickListener
 import com.cherry.lib.doc.util.ViewUtils.hide
 import com.cherry.lib.doc.util.ViewUtils.show
-import kotlinx.android.synthetic.main.doc_view.view.mIvPdf
 import kotlinx.android.synthetic.main.list_item_pdf.view.*
 import kotlinx.android.synthetic.main.pdf_view_page_loading_layout.view.*
 

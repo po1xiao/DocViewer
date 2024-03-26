@@ -16,16 +16,12 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.RelativeLayout
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.LifecycleCoroutineScope
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
-import com.blankj.utilcode.util.AppUtils
 import com.cherry.lib.doc.R
 import com.cherry.lib.doc.bean.DocEngine
 import com.cherry.lib.doc.bean.DocMovingOrientation
@@ -46,6 +42,8 @@ import com.cherry.lib.doc.util.FileUtils
 import com.cherry.lib.doc.util.ViewUtils.hide
 import com.cherry.lib.doc.util.ViewUtils.show
 import kotlinx.android.synthetic.main.doc_view.view.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.MainScope
 import java.io.File
 import java.net.URLEncoder
 
@@ -65,7 +63,7 @@ class DocView : FrameLayout,OnDownloadListener, OnWebLoadListener,OnPdfItemClick
     private val TAG = "DocView"
 
     var mActivity: Activity? = null
-    var lifecycleScope: LifecycleCoroutineScope = (context as AppCompatActivity).lifecycleScope
+    var lifecycleScope: CoroutineScope = MainScope()
     private var pdfRendererCore: PdfRendererCore? = null
     private var pdfViewAdapter: PdfViewAdapter? = null
     private var pdfPageViewAdapter: PdfPageViewAdapter? = null
@@ -335,7 +333,7 @@ class DocView : FrameLayout,OnDownloadListener, OnWebLoadListener,OnPdfItemClick
         url: String,
         pdfQuality: PdfQuality = this.quality,
         engine: DocEngine = this.engine,
-        lifecycleScope: LifecycleCoroutineScope = (context as AppCompatActivity).lifecycleScope
+        lifecycleScope: CoroutineScope = MainScope()
     ) {
         this.lifecycleScope = lifecycleScope
         downloadFile(url, pdfQuality, lifecycleScope)
@@ -369,8 +367,7 @@ class DocView : FrameLayout,OnDownloadListener, OnWebLoadListener,OnPdfItemClick
         showPdf(file, pdfQuality)
     }
 
-    fun downloadFile(url: String, pdfQuality: PdfQuality = this.quality,
-                     lifecycleScope: LifecycleCoroutineScope = (context as AppCompatActivity).lifecycleScope) {
+    fun downloadFile(url: String, pdfQuality: PdfQuality = this.quality, lifecycleScope: CoroutineScope = MainScope()) {
         PdfDownloader(url, this)
     }
 

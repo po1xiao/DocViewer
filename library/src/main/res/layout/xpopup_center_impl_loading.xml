@@ -14,7 +14,7 @@
         android:layout_height="28dp"
         android:visibility="gone" />
 
-    <com.cherry.lib.doc.dialog.LoadingView
+    <com.cherry.lib.doc.dialog.widget.LoadingView
         android:id="@+id/loadview"
         android:layout_width="28dp"
         android:layout_height="28dp" />

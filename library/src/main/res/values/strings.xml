@@ -74,4 +74,11 @@
     <string name="pg_slideshow">SlideShow</string>
     <string name="pg_slideshow_pageup">Page Up</string>
     <string name="pg_slideshow_pagedown">Page Down</string>
+
+    <string name="xpopup_cancel">Cancel</string>
+    <string name="xpopup_ok">OK</string>
+    <string name="xpopup_save">save</string>
+    <string name="xpopup_saved_to_gallery">Saved to album</string>
+    <string name="xpopup_image_not_exist">Image not exist</string>
+    <string name="xpopup_saved_fail">Image save failed</string>
 </resources>

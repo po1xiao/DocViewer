@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import com.cherry.lib.doc.R;
 import com.cherry.lib.doc.bean.FileType;
+import com.cherry.lib.doc.dialog.interfaces.SimpleCallback;
 import com.cherry.lib.doc.office.common.ICustomDialog;
 import com.cherry.lib.doc.office.common.IOfficeToPicture;
 import com.cherry.lib.doc.office.common.ISlideShow;
@@ -38,10 +39,9 @@ import com.cherry.lib.doc.office.simpletext.model.IDocument;
 import com.cherry.lib.doc.office.ss.control.SSControl;
 import com.cherry.lib.doc.office.ss.model.baseModel.Workbook;
 import com.cherry.lib.doc.office.wp.control.WPControl;
-import com.cherry.lib.doc.dialog.XPopupCallbackImp;
-import com.lxj.xpopup.XPopup;
-import com.lxj.xpopup.core.BasePopupView;
-import com.lxj.xpopup.impl.LoadingPopupView;
+import com.cherry.lib.doc.dialog.XPopup;
+import com.cherry.lib.doc.dialog.core.BasePopupView;
+import com.cherry.lib.doc.dialog.impl.LoadingPopupView;
 
 import java.lang.reflect.Method;
 import java.util.Objects;
@@ -129,7 +129,7 @@ public class MainControl extends AbstractControl {
                         if (getMainFrame().isShowProgressBar()) {
                             post(() -> {
                                 progressDialog = new XPopup.Builder(getActivity())
-                                        .setPopupCallback(new XPopupCallbackImp() {
+                                        .setPopupCallback(new SimpleCallback() {
                                             @Override
                                             public boolean onBackPressed(BasePopupView popupView) {
                                                 popupView.dismiss();

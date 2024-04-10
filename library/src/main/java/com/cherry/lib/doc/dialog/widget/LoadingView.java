@@ -1,5 +1,5 @@
 
-package com.cherry.lib.doc.dialog;
+package com.cherry.lib.doc.dialog.widget;
 
 import android.animation.ArgbEvaluator;
 import android.content.Context;
@@ -8,7 +8,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.View;
-import com.lxj.xpopup.util.XPopupUtils;
+
+import com.cherry.lib.doc.dialog.util.XPopupUtils;
 
 public class LoadingView extends View {
     private Paint paint;
@@ -52,7 +53,7 @@ public class LoadingView extends View {
             }
         };
         this.paint = new Paint(1);
-        this.stokeWidth = (float)XPopupUtils.dp2px(context, this.stokeWidth);
+        this.stokeWidth = (float) XPopupUtils.dp2px(context, this.stokeWidth);
         this.paint.setStrokeWidth(this.stokeWidth);
     }
 

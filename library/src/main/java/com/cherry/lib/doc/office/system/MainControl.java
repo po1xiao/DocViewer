@@ -9,7 +9,6 @@ package com.cherry.lib.doc.office.system;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -23,6 +22,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Toast;
 
+import com.cherry.lib.doc.R;
 import com.cherry.lib.doc.bean.FileType;
 import com.cherry.lib.doc.office.common.ICustomDialog;
 import com.cherry.lib.doc.office.common.IOfficeToPicture;
@@ -38,6 +38,10 @@ import com.cherry.lib.doc.office.simpletext.model.IDocument;
 import com.cherry.lib.doc.office.ss.control.SSControl;
 import com.cherry.lib.doc.office.ss.model.baseModel.Workbook;
 import com.cherry.lib.doc.office.wp.control.WPControl;
+import com.cherry.lib.doc.dialog.XPopupCallbackImp;
+import com.lxj.xpopup.XPopup;
+import com.lxj.xpopup.core.BasePopupView;
+import com.lxj.xpopup.impl.LoadingPopupView;
 
 import java.lang.reflect.Method;
 import java.util.Objects;
@@ -62,6 +66,17 @@ public class MainControl extends AbstractControl {
         isAutoTest = autoTest != null && autoTest.equals("true");
     }
 
+    private boolean onDialogBackPressed() {
+        isCancel = true;
+        if (reader != null) {
+            reader.abortReader();
+            reader.dispose();
+        }
+        // getMainFrame().destroyEngine();
+        Objects.requireNonNull(getActivity()).onBackPressed();
+        return true;
+    }
+
     private void initListener() {
         onKeyListener = (dialog, keyCode, event) -> {
             if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -71,7 +86,7 @@ public class MainControl extends AbstractControl {
                     reader.abortReader();
                     reader.dispose();
                 }
-                //getMainFrame().destroyEngine();
+                // getMainFrame().destroyEngine();
                 Objects.requireNonNull(getActivity()).onBackPressed();
                 return true;
             }
@@ -113,10 +128,20 @@ public class MainControl extends AbstractControl {
                     case MainConstant.HANDLER_MESSAGE_SHOW_PROGRESS:
                         if (getMainFrame().isShowProgressBar()) {
                             post(() -> {
-                                progressDialog = ProgressDialog.show(getActivity(),
-                                        frame.getAppName(), frame.getLocalString("DIALOG_LOADING"),
-                                        false, false, null);
-                                progressDialog.setOnKeyListener(onKeyListener);
+                                progressDialog = new XPopup.Builder(getActivity())
+                                        .setPopupCallback(new XPopupCallbackImp() {
+                                            @Override
+                                            public boolean onBackPressed(BasePopupView popupView) {
+                                                popupView.dismiss();
+                                                return onDialogBackPressed();
+                                            }
+                                        })
+                                        .asLoading(frame.getLocalString("DIALOG_LOADING"), R.layout.xpopup_center_impl_loading, LoadingPopupView.Style.Spinner).show();
+                                //
+                                // progressDialog = ProgressDialog.show(getActivity(),
+                                //         frame.getAppName(), frame.getLocalString("DIALOG_LOADING"),
+                                //         false, false, null);
+                                // progressDialog.setOnKeyListener(onKeyListener);
                             });
                         } else {
                             if (customDialog != null) {
@@ -196,23 +221,23 @@ public class MainControl extends AbstractControl {
             frame.openFileFinish();
         }
         PictureKit.instance().setDrawPictrue(true);
-        //use a handler as easiest method to post a Runnable Delayed.
-        //we cannot check hardware-acceleration directly as it will return reasonable results after attached to Window.
+        // use a handler as easiest method to post a Runnable Delayed.
+        // we cannot check hardware-acceleration directly as it will return reasonable results after attached to Window.
         handler.post(new Runnable() {
 
             @Override
             public void run() {
-                //now lets check for HardwareAcceleration since it is only avaliable since ICS.
+                // now lets check for HardwareAcceleration since it is only avaliable since ICS.
                 // 14 = ICS_VERSION_CODE
                 try {
                     View contentView = getView();
-                    //use reflection to get that Method
+                    // use reflection to get that Method
                     assert contentView != null;
                     Method isHardwareAccelerated = contentView.getClass().getMethod("isHardwareAccelerated");
                     Object o = isHardwareAccelerated.invoke(contentView);
                     if (o instanceof Boolean && (Boolean) o) {
-                        //ok we're shure that HardwareAcceleration is on.
-                        //Now Try to switch it off:
+                        // ok we're shure that HardwareAcceleration is on.
+                        // Now Try to switch it off:
                         Method setLayerType = contentView.getClass().getMethod("setLayerType", int.class, android.graphics.Paint.class);
                         int LAYER_TYPE_SOFTWARE = contentView.getClass().getField("LAYER_TYPE_SOFTWARE").getInt(null);
                         setLayerType.invoke(contentView, LAYER_TYPE_SOFTWARE, null);
@@ -304,7 +329,7 @@ public class MainControl extends AbstractControl {
      * @param h
      */
     public void layoutView(int x, int y, int w, int h) {
-        //appControl.layoutView(x, y, w, h);
+        // appControl.layoutView(x, y, w, h);
     }
 
     /**
@@ -366,7 +391,7 @@ public class MainControl extends AbstractControl {
             case EventConstant.SYS_CLOSE_TOOLTIP:
                 toast.cancel();
                 break;
-            case EventConstant.APP_CONTENT_SELECTED:  //selected interesting content
+            case EventConstant.APP_CONTENT_SELECTED:  // selected interesting content
                 appControl.actionEvent(actionID, obj);
                 frame.updateToolsbarStatus();
                 break;
@@ -612,7 +637,7 @@ public class MainControl extends AbstractControl {
         onKeyListener = null;
         toast = null;
         filePath = null;
-        //disposeStatic();
+        // disposeStatic();
         System.gc();
         if (sysKit != null) {
             sysKit.dispose();
@@ -669,10 +694,11 @@ public class MainControl extends AbstractControl {
     private ISlideShow slideShow;
     //
     private IReader reader;
-    //toast
+    // toast
     private Toast toast;
     // 
-    private ProgressDialog progressDialog;
+    // private ProgressDialog progressDialog;
+    private BasePopupView progressDialog;
     //
     private DialogInterface.OnKeyListener onKeyListener;
     //

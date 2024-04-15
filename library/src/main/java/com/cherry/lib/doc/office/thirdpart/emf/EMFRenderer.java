@@ -1035,7 +1035,7 @@ public class EMFRenderer
             mPathXOR.op(getPath(shape), Path.Op.XOR);
             mCanvas.clipPath(mPathXOR);
         } else {
-            mCanvas.clipPath(getPath(shape), Region.Op.XOR);// REPLACE、UNION 等
+            mCanvas.clipPath(getPath(shape), Region.Op.REPLACE);
         }
         // g2.clip(shape);
     }

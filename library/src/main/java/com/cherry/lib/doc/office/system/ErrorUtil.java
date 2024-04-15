@@ -1,6 +1,6 @@
 /*
  * 文件名称:          ErrorUtil.java
- *  
+ *
  * 编译器:            android2.2
  * 时间:              下午5:07:21
  */
@@ -13,6 +13,8 @@ import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import com.cherry.lib.doc.dialog.XPopup;
+import com.cherry.lib.doc.dialog.interfaces.OnConfirmListener;
 import com.cherry.lib.doc.office.common.ICustomDialog;
 import com.cherry.lib.doc.office.constant.EventConstant;
 import com.cherry.lib.doc.office.fc.OldFileFormatException;
@@ -35,7 +37,7 @@ import android.os.Environment;
  * <p>
  * 负责人:          ljj8494
  * <p>
- * 负责小组:         
+ * 负责小组:
  * <p>
  * <p>
  */
@@ -66,14 +68,14 @@ public class ErrorUtil
     private static final SimpleDateFormat sdf_24 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");   //
     //
     private static final String VERSION = "2.0.0.4";
-    
+
     /**
-     * 
+     *
      */
     public ErrorUtil(SysKit syskit)
     {
-    	this.sysKit = syskit; 
-    	
+    	this.sysKit = syskit;
+
     	if(syskit.getControl().getMainFrame().isWriteLog())
         {
         	logFile = syskit.getControl().getMainFrame().getTemporaryDirectory();
@@ -85,19 +87,19 @@ public class ErrorUtil
             {
             	return;
             }
-            
+
             if (!logFile.exists())
             {
                 logFile.mkdirs();
             }
             logFile = new File(logFile.getAbsolutePath() + File.separatorChar + "errorLog.txt");
-        }     
+        }
     }
-    
-    /**   
-     * 保存错误信息到文件中   
-     * @param ex   
-     * @return   
+
+    /**
+     * 保存错误信息到文件中
+     * @param ex
+     * @return
      */
     public void writerLog(Throwable ex)
     {
@@ -105,29 +107,29 @@ public class ErrorUtil
         // 增加报错打印，方便debug
         ex.printStackTrace();
     }
-    
+
     /**
-     * 
+     *
      * @param ex
      */
     public void writerLog(Throwable ex, boolean isReaderFile)
     {
         writerLog(ex, isReaderFile, true);
     }
-    
+
     /**
-     * 
+     *
      * @param ex
      */
     public void writerLog(Throwable ex, boolean isReaderFile, boolean isShowErrorDialog)
-    {   
+    {
         try
         {
             if (ex instanceof AbortReaderError)
             {
                 return;
             }
-            
+
             if (logFile == null)
             {
         		ex = new Throwable("SD CARD ERROR");
@@ -138,7 +140,7 @@ public class ErrorUtil
             }
             else
             {
-            	if (sysKit.getControl().getMainFrame().isWriteLog() 
+            	if (sysKit.getControl().getMainFrame().isWriteLog()
                         && !(ex instanceof OutOfMemoryError))
                     {
                         FileWriter info = new FileWriter(logFile, true);
@@ -150,14 +152,14 @@ public class ErrorUtil
                         info.close();
                     }
             }
-            
+
             if (isShowErrorDialog)
             {
                 processThrowable(ex, isReaderFile);
             }
             // If outOfMemoryError, prompt user to end application running
         }
-        catch (OutOfMemoryError e) 
+        catch (OutOfMemoryError e)
         {
             sysKit.getControl().getMainFrame().getActivity().onBackPressed();
         }
@@ -165,11 +167,11 @@ public class ErrorUtil
         {
             return;
         }
-        
+
     }
-    
+
     /**
-     * 
+     *
      */
     private void processThrowable(final Throwable ex, final boolean isReaderFile)
     {
@@ -189,9 +191,9 @@ public class ErrorUtil
             {
 
                 public void run()
-                {                 
+                {
                     try
-                    {                 
+                    {
                         String err = "";
                         String error = ex.toString();
                         int errorCode = SYSTEM_CRASH;
@@ -271,35 +273,39 @@ public class ErrorUtil
                             control.actionEvent(EventConstant.APP_ABORTREADING, true);
                             if (control.getMainFrame().isPopUpErrorDlg() && message == null)
                             {
-                                AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-                                builder.setMessage(err);
-                                builder.setCancelable(false);
-                                builder.setTitle(control.getMainFrame().getAppName());
-                                String ok = control.getMainFrame().getLocalString("BUTTON_OK");
-                                builder.setPositiveButton(ok, new DialogInterface.OnClickListener()
-                                {                                
-                                    public void onClick(DialogInterface dialog, int id)
-                                    {
-                                        message = null;
-                                        
-                                        /*if (control.getReader() != null)
-                                        {
-                                            try
-                                            {
-                                                control.getReader().abortReader();
-                                                control.getReader().dispose();
-                                            }
-                                            catch (Exception e)
-                                            {
-                                            }
-                                            
-                                        }*/
-                                        activity.onBackPressed();
-                                        //control.getMainFrame().destroyEngine();
-                                    }
-                                });
-                                message = builder.create();
-                                message.show();
+                                new XPopup.Builder(activity).asConfirm("", err, null, control.getMainFrame().getLocalString("BUTTON_OK"), () -> {
+                                    message = null;
+                                    activity.onBackPressed();
+                                }, null, true).show();
+                                // AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+                                // builder.setMessage(err);
+                                // builder.setCancelable(false);
+                                // builder.setTitle(control.getMainFrame().getAppName());
+                                // String ok = control.getMainFrame().getLocalString("BUTTON_OK");
+                                // builder.setPositiveButton(ok, new DialogInterface.OnClickListener()
+                                // {
+                                //     public void onClick(DialogInterface dialog, int id)
+                                //     {
+                                //         message = null;
+                                //
+                                //         /*if (control.getReader() != null)
+                                //         {
+                                //             try
+                                //             {
+                                //                 control.getReader().abortReader();
+                                //                 control.getReader().dispose();
+                                //             }
+                                //             catch (Exception e)
+                                //             {
+                                //             }
+                                //
+                                //         }*/
+                                //         activity.onBackPressed();
+                                //         //control.getMainFrame().destroyEngine();
+                                //     }
+                                // });
+                                // message = builder.create();
+                                // message.show();
                             }
                             else
                             {
@@ -313,7 +319,7 @@ public class ErrorUtil
                         /*else if (SysKit.instance().isDebug())
                         {
                             control.getActivity().onBackPressed();
-                        }*/           
+                        }*/
                     }
                     catch (Exception eee)
                     {
@@ -323,15 +329,15 @@ public class ErrorUtil
             });
         }
     }
-    
+
     /**
-     * 
+     *
      */
     public void dispose()
     {
         sysKit = null;
     }
-    
+
     //
     private File logFile;
     //
